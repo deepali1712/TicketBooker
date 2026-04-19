@@ -17,43 +17,48 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // 1. Check if the user is attempting Admin Login
+    // 1. Check for Admin Login
     if (formData.email === ADMIN_EMAIL && formData.password === ADMIN_PASS) {
+      console.log("Admin match found! Redirecting to Control Panel...");
+
       localStorage.setItem("userRole", "admin");
       localStorage.setItem("userName", "Master Admin");
-      localStorage.setItem("userToken", "secure_admin_session_789");
+      localStorage.setItem("userToken", "admin_secure_789");
 
-      alert("Admin Access Granted. Entering Secure Dashboard.");
-      navigate("/admin");
-      window.location.reload(); // Refresh to update global states
+      // We use a tiny timeout to ensure localStorage is written before redirect
+      setTimeout(() => {
+        navigate("/admin");
+        window.location.reload();
+      }, 100);
       return;
     }
 
-    // 2. Normal User Flow (Connect to teammate's backend here later)
-    console.log("Normal User Auth:", formData);
+    // 2. Normal User Flow
+    console.log("Normal User Login:", formData.email);
 
-    // Simulating success for a normal user
     localStorage.setItem("userRole", "user");
     localStorage.setItem("userName", formData.name || "User");
-    localStorage.setItem("userToken", "normal_user_session_123");
+    localStorage.setItem("userToken", "user_session_123");
 
-    navigate("/"); // Take normal user to the main dashboard
-    window.location.reload();
+    setTimeout(() => {
+      navigate("/");
+      window.location.reload();
+    }, 100);
   };
 
   return (
     <div className="min-h-screen flex items-start justify-center bg-zinc-950 px-6 py-24 relative overflow-hidden">
-      {/* Soft background glow */}
+      {/* Background Aesthetic Glow */}
       <div className="absolute w-[500px] h-[500px] bg-red-600/5 blur-[120px] rounded-full -top-40 -left-20"></div>
 
       <div className="w-full max-w-[420px] bg-zinc-900/40 backdrop-blur-2xl border border-white/5 p-10 rounded-[2.5rem] shadow-2xl z-10">
         <div className="text-center mb-10">
           <h2 className="text-4xl font-bold tracking-tight text-white mb-3">
-            {isSignup ? "Join Us" : "Welcome Back"}
+            {isSignup ? "Create Account" : "Welcome Back"}
           </h2>
           <p className="text-zinc-500 text-sm">
             {isSignup
-              ? "Create an account to start booking."
+              ? "Join TicketBooker to book your favorite shows"
               : "Sign in to access your dashboard."}
           </p>
         </div>
@@ -68,7 +73,7 @@ export default function Login() {
                 type="text"
                 required
                 className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:border-red-500 focus:bg-white/10 outline-none transition-all placeholder:text-zinc-700"
-                placeholder="Your Name"
+                placeholder="Rahul Sharma"
                 onChange={(e) =>
                   setFormData({ ...formData, name: e.target.value })
                 }
@@ -84,7 +89,8 @@ export default function Login() {
               type="email"
               required
               className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:border-red-500 focus:bg-white/10 outline-none transition-all placeholder:text-zinc-700"
-              placeholder="name@email.com"
+              placeholder="email"
+              value={formData.email}
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
               }
@@ -100,6 +106,7 @@ export default function Login() {
               required
               className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:border-red-500 focus:bg-white/10 outline-none transition-all placeholder:text-zinc-700"
               placeholder="••••••••"
+              value={formData.password}
               onChange={(e) =>
                 setFormData({ ...formData, password: e.target.value })
               }
@@ -110,7 +117,8 @@ export default function Login() {
             type="submit"
             className="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-red-600/20 mt-6 active:scale-[0.98]"
           >
-            {isSignup ? "Create Account" : "Sign In"}
+            {/* 🔴 This logic ensures the button says the right thing */}
+            {isSignup ? "Create Account" : "Login"}
           </button>
         </form>
 
@@ -118,6 +126,7 @@ export default function Login() {
           <p className="text-zinc-500 text-sm">
             {isSignup ? "Already have an account?" : "Don't have an account?"}
             <button
+              type="button"
               onClick={() => setIsSignup(!isSignup)}
               className="text-red-500 font-bold ml-2 hover:text-red-400 transition-colors"
             >
